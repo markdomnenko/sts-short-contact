@@ -11,45 +11,102 @@
   <link rel="preconnect" href="https://stsrecycling.sugarondemand.com">
   
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: transparent;
+    }
+    
     .ava-form-wide {
       width: 100%;
-      max-width: 960px;
-      padding: 8px;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      text-align: center;
-      margin: 2px auto;
+      max-width: 100%;
+      padding: 20px;
+      margin: 0 auto;
     }
-    .ava-form-wide h1 { font-size: 20px; font-weight: 500; margin-bottom: 8px; color: #333; }
-    .ava-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 8px; }
-    .ava-col { flex: 1 1 45%; min-width: 200px; }
-    .ava-full { flex: 1 1 100%; }
-    .ava-col input, .ava-full input {
-      width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
+    
+    .ava-row { 
+      margin-bottom: 16px;
     }
+    
+    .ava-full input, .ava-full textarea {
+      width: 100%; 
+      padding: 14px 16px; 
+      font-size: 15px; 
+      border: 1px solid #d1d5db; 
+      border-radius: 8px; 
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    
+    .ava-full input:focus, .ava-full textarea:focus {
+      outline: none;
+      border-color: #0069e1;
+      box-shadow: 0 0 0 3px rgba(0, 105, 225, 0.1);
+    }
+    
+    .ava-full textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
     .g-recaptcha { 
       margin: 0 auto;
       display: inline-block;
     }
+    
     .recaptcha-container {
       text-align: center;
-      margin: 15px 0;
+      margin: 20px 0;
     }
+    
     .ava-submit-btn {
-      width: 100%; max-width: 200px; padding: 10px; font-size: 14px; font-weight: 500;
-      background-color: #0069e1; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin: 15px auto; display: block;
+      width: 100%; 
+      padding: 14px; 
+      font-size: 16px; 
+      font-weight: 600;
+      background-color: #0069e1; 
+      color: #fff; 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      margin: 20px 0 0 0; 
+      display: block;
+      transition: background-color 0.2s;
     }
-    .ava-submit-btn:hover { background-color: #0057ba; }
+    
+    .ava-submit-btn:hover { 
+      background-color: #0057ba; 
+    }
+    
     .ava-submit-btn:disabled { 
       background-color: #cccccc; 
       cursor: not-allowed; 
     }
-    .ava-hidden { position: absolute; left: -9999px; top: -9999px; pointer-events: none; }
+    
+    .ava-hidden { 
+      position: absolute; 
+      left: -9999px; 
+      top: -9999px; 
+      pointer-events: none; 
+    }
+    
     @media (max-width:600px){
-      .ava-col,.ava-full{ flex:1 1 100% }
-      .ava-form-wide h1{ font-size:18px }
+      .ava-form-wide {
+        padding: 15px;
+      }
+      
       .g-recaptcha{ 
-        transform:scale(0.88); 
-        transform-origin:center center;
+        transform: scale(0.88); 
+        transform-origin: center center;
+      }
+      
+      .ava-full input, .ava-full textarea {
+        font-size: 16px; /* Prevents iOS zoom */
       }
     }
   </style>
@@ -58,101 +115,97 @@
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-<div style="display:flex; justify-content:center; padding:10px;">
-  <div class="ava-form-wide">
-    <h1>Free Recycling Quote</h1>
-
-    <form id="WebToLeadForm" action="https://stsrecycling.sugarondemand.com/index.php?entryPoint=WebToLeadCapture" method="POST" name="WebToLeadForm">
-      <div class="ava-row">
-        <div class="ava-full">
-          <input type="text" id="full_name" name="full_name" placeholder="Name*" required />
-        </div>
+<div class="ava-form-wide">
+  <form id="WebToLeadForm" action="https://stsrecycling.sugarondemand.com/index.php?entryPoint=WebToLeadCapture" method="POST" name="WebToLeadForm">
+    <div class="ava-row">
+      <div class="ava-full">
+        <input type="text" id="full_name" name="full_name" placeholder="Your Name*" required />
       </div>
+    </div>
 
-      <div class="ava-row">
-        <div class="ava-full">
-          <input type="text" id="phone_work" name="phone_work" placeholder="Phone Number*" required />
-        </div>
+    <div class="ava-row">
+      <div class="ava-full">
+        <input type="text" id="phone_work" name="phone_work" placeholder="Phone Number*" required />
       </div>
+    </div>
 
-      <div class="ava-row">
-        <div class="ava-full">
-          <input type="email" id="email" name="email" placeholder="Email Address*" required />
-        </div>
+    <div class="ava-row">
+      <div class="ava-full">
+        <input type="email" id="email" name="email" placeholder="Email Address*" required />
       </div>
+    </div>
 
-      <div class="ava-row">
-        <div class="ava-full">
-          <input type="text" id="description" name="description" placeholder="Pickup Notes / Request Details" />
-        </div>
+    <div class="ava-row">
+      <div class="ava-full">
+        <textarea id="description" name="description" placeholder="Equipment details or special requirements (optional)"></textarea>
       </div>
+    </div>
 
-      <!-- reCAPTCHA -->
-      <div class="recaptcha-container">
-        <div class="g-recaptcha" data-sitekey="6Ld0cZIrAAAAAPgYU8rbR2gOP6FMdB1g-9e5uH1O" data-callback="onRecaptchaValidated" data-expired-callback="onRecaptchaExpired"></div>
-        <div id="recaptcha-feedback" style="display:none; color:#c0392b; margin:8px 0; font-size:14px;">Please complete the reCAPTCHA verification.</div>
-      </div>
+    <!-- reCAPTCHA -->
+    <div class="recaptcha-container">
+      <div class="g-recaptcha" data-sitekey="6Ld0cZIrAAAAAPgYU8rbR2gOP6FMdB1g-9e5uH1O" data-callback="onRecaptchaValidated" data-expired-callback="onRecaptchaExpired"></div>
+      <div id="recaptcha-feedback" style="display:none; color:#c0392b; margin:8px 0; font-size:14px;">Please complete the reCAPTCHA verification.</div>
+    </div>
 
-      <!-- Submit Button -->
-      <button type="button" class="ava-submit-btn" onclick="submitForm()">Submit</button>
+    <!-- Submit Button -->
+    <button type="button" class="ava-submit-btn" onclick="submitForm()">GET FREE QUOTE →</button>
 
-      <!-- Hidden name fields for Sugar (populated from full_name) -->
-      <input type="hidden" id="first_name" name="first_name" />
-      <input type="hidden" id="last_name" name="last_name" />
+    <!-- Hidden name fields for Sugar (populated from full_name) -->
+    <input type="hidden" id="first_name" name="first_name" />
+    <input type="hidden" id="last_name" name="last_name" />
 
-      <!-- Tracking -->
-      <input type="hidden" id="form_timestamp" name="form_timestamp" />
+    <!-- Tracking -->
+    <input type="hidden" id="form_timestamp" name="form_timestamp" />
 
-      <!-- Hidden fields that Sugar needs -->
-      <input type="hidden" id="account_name" name="account_name" value="Web Lead" />
+    <!-- Hidden fields that Sugar needs -->
+    <input type="hidden" id="account_name" name="account_name" value="Web Lead" />
 
-      <!-- Honeypots -->
-      <div class="ava-hidden">
-        <input type="text" id="company_location_fake" name="company_location_fake" autocomplete="off" tabindex="-1" />
-        <input type="text" id="sic_code" name="sic_code" autocomplete="off" tabindex="-1" />
-        <input type="email" id="confirm_email" name="confirm_email" autocomplete="off" tabindex="-1" />
-        <input type="checkbox" id="subscribe_newsletter" name="subscribe_newsletter" tabindex="-1" />
+    <!-- Honeypots -->
+    <div class="ava-hidden">
+      <input type="text" id="company_location_fake" name="company_location_fake" autocomplete="off" tabindex="-1" />
+      <input type="text" id="sic_code" name="sic_code" autocomplete="off" tabindex="-1" />
+      <input type="email" id="confirm_email" name="confirm_email" autocomplete="off" tabindex="-1" />
+      <input type="checkbox" id="subscribe_newsletter" name="subscribe_newsletter" tabindex="-1" />
 
-        <!-- All Sugar form fields hidden -->
-        <input type="text" id="lead_source_description" name="lead_source_description" autocomplete="off" tabindex="-1" />
-        <input type="text" id="account_description" name="account_description" autocomplete="off" tabindex="-1" />
-        <input type="text" id="hint_account_description" name="hint_account_description" autocomplete="off" tabindex="-1" />
-        <select id="lead_source" name="lead_source" tabindex="-1">
-          <option selected="selected" value="Web Site">Web Site</option>
-          <option value="Marketing Call">Marketing Call</option>
-          <option value="Email Campaign">Email Campaign</option>
-          <option value="Trade Show">Trade Show</option>
-          <option value="Cold Call">Cold Call</option>
-          <option value="Other">Other</option>
-          <option value="STS Recycling">STS Recycling</option>
-        </select>
-      </div>
+      <!-- All Sugar form fields hidden -->
+      <input type="text" id="lead_source_description" name="lead_source_description" autocomplete="off" tabindex="-1" />
+      <input type="text" id="account_description" name="account_description" autocomplete="off" tabindex="-1" />
+      <input type="text" id="hint_account_description" name="hint_account_description" autocomplete="off" tabindex="-1" />
+      <select id="lead_source" name="lead_source" tabindex="-1">
+        <option selected="selected" value="Web Site">Web Site</option>
+        <option value="Marketing Call">Marketing Call</option>
+        <option value="Email Campaign">Email Campaign</option>
+        <option value="Trade Show">Trade Show</option>
+        <option value="Cold Call">Cold Call</option>
+        <option value="Other">Other</option>
+        <option value="STS Recycling">STS Recycling</option>
+      </select>
+    </div>
 
-      <!-- JS token + time trap -->
-      <input type="hidden" id="js_token_name" name="js_token_name" />
-      <input type="hidden" id="js_token_value" name="js_token_value" />
-      <input type="hidden" id="form_rendered_at" name="form_rendered_at" />
-      <input type="hidden" id="form_submitted_at" name="form_submitted_at" />
+    <!-- JS token + time trap -->
+    <input type="hidden" id="js_token_name" name="js_token_name" />
+    <input type="hidden" id="js_token_value" name="js_token_value" />
+    <input type="hidden" id="form_rendered_at" name="form_rendered_at" />
+    <input type="hidden" id="form_submitted_at" name="form_submitted_at" />
 
-      <!-- SugarCRM - NEW STS MIDWEST CAMPAIGN -->
-      <input type="hidden" name="campaign_id" value="0b8cd8d0-8236-11f0-a4c1-3d5acab8b3e9" />
-      <input type="hidden" name="redirect_url" value="https://www.stselectronicrecyclinginc.com/thank-you-midwest-2" />
-      <input type="hidden" name="redirectRequestType" value="GET" />
-      <input type="hidden" name="redirectIncludeParams" value="0" />
-      <input type="hidden" name="assigned_user_id" value="c459daee-58d2-42f6-b307-8ad8a8189964" />
-      <input type="hidden" name="team_id" value="1" />
-      <input type="hidden" name="team_set_id" value="1" />
-      <input type="hidden" name="req_id" value="last_name;" />
+    <!-- SugarCRM - NEW STS MIDWEST CAMPAIGN -->
+    <input type="hidden" name="campaign_id" value="0b8cd8d0-8236-11f0-a4c1-3d5acab8b3e9" />
+    <input type="hidden" name="redirect_url" value="https://www.stselectronicrecyclinginc.com/thank-you-midwest-2" />
+    <input type="hidden" name="redirectRequestType" value="GET" />
+    <input type="hidden" name="redirectIncludeParams" value="0" />
+    <input type="hidden" name="assigned_user_id" value="c459daee-58d2-42f6-b307-8ad8a8189964" />
+    <input type="hidden" name="team_id" value="1" />
+    <input type="hidden" name="team_set_id" value="1" />
+    <input type="hidden" name="req_id" value="last_name;" />
 
-    </form>
-  </div>
+  </form>
 </div>
 
 <script src="https://stsrecycling.sugarondemand.com/cache/include/javascript/sugar_grp1.js?v=Q7DTb-dmcWYeZPQO0wBQog"></script>
 <script>
   // --- iframe auto-resize: tell parent our height ---
   function sendHeight(){
-    const h = 560; // Increased height for pickup notes field
+    const h = document.body.scrollHeight + 20;
     window.parent && window.parent.postMessage({ type:"setFormHeight", height:h }, "*");
   }
   
