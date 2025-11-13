@@ -26,10 +26,17 @@
     .ava-col input, .ava-full input {
       width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
     }
-    .g-recaptcha { margin: 0 auto; }
+    .g-recaptcha { 
+      margin: 0 auto;
+      display: inline-block;
+    }
+    .recaptcha-container {
+      text-align: center;
+      margin: 15px 0;
+    }
     .ava-submit-btn {
       width: 100%; max-width: 200px; padding: 10px; font-size: 14px; font-weight: 500;
-      background-color: #0069e1; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin: 0 auto; display: block;
+      background-color: #0069e1; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin: 15px auto; display: block;
     }
     .ava-submit-btn:hover { background-color: #0057ba; }
     .ava-submit-btn:disabled { 
@@ -40,15 +47,15 @@
     @media (max-width:600px){
       .ava-col,.ava-full{ flex:1 1 100% }
       .ava-form-wide h1{ font-size:18px }
-      .g-recaptcha{ transform:scale(0.88); transform-origin:0 0 }
-
-      /* Keep first/last name side by side on mobile to save space */
-      .ava-row:first-of-type .ava-col {
-        flex: 1 1 45%;
-        min-width: 120px;
+      .g-recaptcha{ 
+        transform:scale(0.88); 
+        transform-origin:center center;
       }
     }
   </style>
+  
+  <!-- Load reCAPTCHA script in head -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 <div style="display:flex; justify-content:center; padding:10px;">
@@ -57,20 +64,14 @@
 
     <form id="WebToLeadForm" action="https://stsrecycling.sugarondemand.com/index.php?entryPoint=WebToLeadCapture" method="POST" name="WebToLeadForm">
       <div class="ava-row">
-        <div class="ava-col">
-          <input type="text" id="first_name" name="first_name" placeholder="First Name*" required />
-        </div>
-        <div class="ava-col">
-          <input type="text" id="last_name" name="last_name" placeholder="Last Name*" required />
+        <div class="ava-full">
+          <input type="text" id="full_name" name="full_name" placeholder="Name*" required />
         </div>
       </div>
 
       <div class="ava-row">
-        <div class="ava-col">
-          <input type="text" id="phone_work" name="phone_work" placeholder="Office Phone*" required />
-        </div>
-        <div class="ava-col">
-          <input type="text" id="account_name" name="account_name" placeholder="Company Name*" required />
+        <div class="ava-full">
+          <input type="text" id="phone_work" name="phone_work" placeholder="Phone Number*" required />
         </div>
       </div>
 
@@ -86,8 +87,24 @@
         </div>
       </div>
 
+      <!-- reCAPTCHA -->
+      <div class="recaptcha-container">
+        <div class="g-recaptcha" data-sitekey="6Ld0cZIrAAAAAPgYU8rbR2gOP6FMdB1g-9e5uH1O" data-callback="onRecaptchaValidated" data-expired-callback="onRecaptchaExpired"></div>
+        <div id="recaptcha-feedback" style="display:none; color:#c0392b; margin:8px 0; font-size:14px;">Please complete the reCAPTCHA verification.</div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="button" class="ava-submit-btn" onclick="submitForm()">Submit</button>
+
+      <!-- Hidden name fields for Sugar (populated from full_name) -->
+      <input type="hidden" id="first_name" name="first_name" />
+      <input type="hidden" id="last_name" name="last_name" />
+
       <!-- Tracking -->
       <input type="hidden" id="form_timestamp" name="form_timestamp" />
+
+      <!-- Hidden fields that Sugar needs -->
+      <input type="hidden" id="account_name" name="account_name" value="Web Lead" />
 
       <!-- Honeypots -->
       <div class="ava-hidden">
@@ -127,30 +144,22 @@
       <input type="hidden" name="team_set_id" value="1" />
       <input type="hidden" name="req_id" value="last_name;" />
 
-      <!-- reCAPTCHA and Submit Button Row -->
-      <div class="ava-row" style="align-items: center; justify-content: center; margin-top: 10px;">
-        <div class="ava-col" style="flex: 0 0 auto;">
-          <div class="g-recaptcha" data-sitekey="6Ld0cZIrAAAAAPgYU8rbR2gOP6FMdB1g-9e5uH1O" data-callback="onRecaptchaValidated" data-expired-callback="onRecaptchaExpired"></div>
-          <div id="recaptcha-feedback" style="display:none; color:#c0392b; margin:8px 0;">Please complete the reCAPTCHA verification.</div>
-        </div>
-        <div class="ava-col" style="flex: 0 0 auto;">
-          <button type="button" class="ava-submit-btn" onclick="submitForm()">Submit</button>
-        </div>
-      </div>
-
     </form>
   </div>
 </div>
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script src="https://stsrecycling.sugarondemand.com/cache/include/javascript/sugar_grp1.js?v=Q7DTb-dmcWYeZPQO0wBQog"></script>
 <script>
   // --- iframe auto-resize: tell parent our height ---
   function sendHeight(){
-    const h = 420; // Fixed height for better performance
+    const h = 560; // Increased height for pickup notes field
     window.parent && window.parent.postMessage({ type:"setFormHeight", height:h }, "*");
   }
-  window.addEventListener("load", sendHeight);
+  
+  // Call sendHeight after a short delay to ensure reCAPTCHA is rendered
+  window.addEventListener("load", function() {
+    setTimeout(sendHeight, 500);
+  });
   window.addEventListener("resize", sendHeight);
 
   // --- form protection state ---
@@ -175,12 +184,15 @@
 
   // Ensure reCAPTCHA loads properly
   window.addEventListener('load', function() {
-    // Check if reCAPTCHA loaded
-    if (typeof grecaptcha === 'undefined') {
-      console.error('reCAPTCHA failed to load');
-    } else {
-      console.log('reCAPTCHA loaded successfully');
-    }
+    setTimeout(function() {
+      if (typeof grecaptcha === 'undefined') {
+        console.error('reCAPTCHA failed to load - check if domain is authorized');
+        document.getElementById('recaptcha-feedback').style.display='block';
+        document.getElementById('recaptcha-feedback').textContent = 'Security verification unavailable. Please contact support.';
+      } else {
+        console.log('reCAPTCHA loaded successfully');
+      }
+    }, 2000);
   });
 
   // Sugar's email validation function
@@ -195,8 +207,31 @@
     return true;
   }
 
+  // Split full name into first and last name
+  function splitFullName(fullName) {
+    const trimmed = fullName.trim();
+    const parts = trimmed.split(/\s+/);
+    
+    if (parts.length === 0) {
+      return { firstName: '', lastName: '' };
+    } else if (parts.length === 1) {
+      return { firstName: parts[0], lastName: parts[0] };
+    } else {
+      // First word is first name, rest is last name
+      const firstName = parts[0];
+      const lastName = parts.slice(1).join(' ');
+      return { firstName, lastName };
+    }
+  }
+
   function submitForm(){
     const form = document.getElementById('WebToLeadForm');
+
+    // Split the full name into first and last
+    const fullName = document.getElementById('full_name').value;
+    const { firstName, lastName } = splitFullName(fullName);
+    document.getElementById('first_name').value = firstName;
+    document.getElementById('last_name').value = lastName;
 
     // honeypots (only check original honeypots, not the Sugar fields)
     const hpHits =
